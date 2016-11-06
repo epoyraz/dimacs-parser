@@ -11,7 +11,7 @@ public class Parser {
 	
 	public static void main(String[] args) {
 		
-		String filename = "aim-100-1_6-no-1.cnf";
+		String filename = "goldb-heqc-k2mul.cnf";
 		int vars = 0;
 		int clauses = 0;
 		
@@ -28,6 +28,8 @@ public class Parser {
 		ArrayList<Integer> unitClauses = new ArrayList<>();
 		
 		Set<Integer> variables= new HashSet<>();
+		Set<String> literals = new HashSet<>();
+		
 
 
 		try (BufferedReader br = new BufferedReader(new FileReader("files/"+filename)))
@@ -48,6 +50,11 @@ public class Parser {
 					//System.out.println(sCurrentLine);
 				}
 				if(sCurrentLine.startsWith("-") || Character.isDigit(sCurrentLine.charAt(0))){
+					
+					String [] vars_in_line2 = sCurrentLine.split(" ");
+					for(String literal:vars_in_line2){
+						literals.add(literal);
+					}
 					
 					String line_without_minus = sCurrentLine.replace("-","");
 					String [] vars_in_line = line_without_minus.split(" ");
@@ -78,7 +85,20 @@ public class Parser {
 		}		
 		
 		varcount = variables.size()-1;
-				
+		literalcount = literals.size()-1;
+		
+		for (String s : literals) {
+			if(Character.isDigit(s.charAt(0))){
+				String negative = "-"+s;
+				if(!literals.contains(negative) && !s.equals("0"))
+					positivePure.add(Integer.parseInt(s));
+			}else if(s.contains("-")){
+				if(!literals.contains(s.replace("-", ""))){
+					negativePure.add(Integer.parseInt(s));
+				}						
+			}
+		}
+		
 		System.out.println("File : " + filename);
 		System.out.println("Problem line : #vars = " + vars + ", #clauses = " + clauses);
 		System.out.println("Variable count : " + varcount);
